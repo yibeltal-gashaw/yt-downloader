@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Loader2, CheckCircle2, ChevronDown, Music, Film } from 'lucide-react';
+import { Loader2, CheckCircle2, ChevronDown, Music, Film } from 'lucide-react';
 
 export default function DownloadOptions({
   formats = [],

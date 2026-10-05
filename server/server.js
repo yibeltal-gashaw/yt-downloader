@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const os = require('os');
 const downloader = require('./downloader');
 
 const app = express();
@@ -355,6 +356,37 @@ app.post('/api/download', async (req, res) => {
   }
 });
 
+// API: Get Network Info for Phone / LAN Access
+app.get('/api/network-info', (req, res) => {
+  const interfaces = os.networkInterfaces();
+  const addresses = [];
+
+  for (const [name, netList] of Object.entries(interfaces)) {
+    if (!netList) continue;
+    for (const net of netList) {
+      if (net.family === 'IPv4' && !net.internal) {
+        if (!net.address.startsWith('169.254.')) {
+          addresses.push({
+            name,
+            ip: net.address,
+          });
+        }
+      }
+    }
+  }
+
+  addresses.sort((a, b) => {
+    const isPrefA = /wi-?fi|wlan/i.test(a.name) ? 2 : /ethernet|lan/i.test(a.name) ? 1 : 0;
+    const isPrefB = /wi-?fi|wlan/i.test(b.name) ? 2 : /ethernet|lan/i.test(b.name) ? 1 : 0;
+    return isPrefB - isPrefA;
+  });
+
+  res.json({
+    addresses,
+    serverPort: PORT,
+  });
+});
+
 // Serve frontend in production or if client/dist exists
 const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
@@ -367,6 +399,16 @@ if (fs.existsSync(clientDistPath)) {
 }
 
 // Start server
-app.listen(PORT, () => {
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
   console.log(`YouTube Downloader server running at http://localhost:${PORT}`);
+  const interfaces = os.networkInterfaces();
+  for (const [name, netList] of Object.entries(interfaces)) {
+    if (!netList) continue;
+    for (const net of netList) {
+      if (net.family === 'IPv4' && !net.internal && !net.address.startsWith('169.254.')) {
+        console.log(`  - Network Access (${name}): http://${net.address}:${PORT} (UI at port 5173 during dev)`);
+      }
+    }
+  }
 });

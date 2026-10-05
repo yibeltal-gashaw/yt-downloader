@@ -59,6 +59,20 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## Phone / Mobile Access Over Local Network
+
+You can access the downloader from your smartphone (iPhone, Android) over your local Wi-Fi:
+
+1. Ensure your phone and computer are connected to the **same Wi-Fi network**.
+2. Start the app with `npm run dev` (or `npm start` in production).
+3. In the web interface, click the **"Use on Phone"** button in the top navbar to reveal your network URL and a **QR Code**.
+4. Scan the QR code with your phone's camera, or navigate to:
+   - **Dev Mode**: `http://<YOUR_LOCAL_IP>:5173` (e.g., `http://172.16.239.125:5173`)
+   - **Production**: `http://<YOUR_LOCAL_IP>:3000` (e.g., `http://172.16.239.125:3000`)
+5. Downloaded media files are automatically saved to your phone's storage.
+
+---
+
 ## FFmpeg Installation
 
 FFmpeg is used for merging video/audio streams and converting audio to MP3. While the project bundles an automated fallback, having FFmpeg on your system PATH is recommended:

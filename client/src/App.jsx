@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sun, Moon, AlertCircle, Video } from 'lucide-react';
+import { Sun, Moon, AlertCircle, Video, Smartphone } from 'lucide-react';
 import UrlInput from './components/UrlInput';
 import VideoCard from './components/VideoCard';
 import DownloadOptions from './components/DownloadOptions';
+import PhoneConnectModal from './components/PhoneConnectModal';
 
 // Regex to validate common YouTube URLs
 const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/;
@@ -18,6 +19,7 @@ export default function App() {
   const [isFetchingInfo, setIsFetchingInfo] = useState(false);
   const [videoInfo, setVideoInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
 
   // Download and progress state
   const [selectedFormat, setSelectedFormat] = useState('mp4');
@@ -216,14 +218,30 @@ export default function App() {
           </span>
         </div>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-200/50 dark:hover:bg-neutral-800 transition"
-        >
-          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Phone Access Button */}
+          <button
+            type="button"
+            onClick={() => setIsPhoneModalOpen(true)}
+            aria-label="Connect via phone"
+            title="Open on phone over Wi-Fi"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white bg-neutral-100 hover:bg-neutral-200/80 dark:bg-neutral-800 dark:hover:bg-neutral-700/80 transition shadow-sm active:scale-95"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-red-500" />
+            <span className="hidden sm:inline">Use on Phone</span>
+            <span className="sm:hidden">Phone</span>
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 rounded-xl text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-200/50 dark:hover:bg-neutral-800 transition"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+        </div>
       </header>
 
       {/* Main Content Card */}
@@ -281,6 +299,12 @@ export default function App() {
       <footer className="max-w-xl mx-auto w-full pt-8 text-center text-xs text-neutral-400 dark:text-neutral-600">
         <p>Simple local utility. For authorized personal use only.</p>
       </footer>
+
+      {/* Phone Connect Modal */}
+      <PhoneConnectModal
+        isOpen={isPhoneModalOpen}
+        onClose={() => setIsPhoneModalOpen(false)}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Loader2, X, Link2 } from 'lucide-react';
+import { Loader2, X, Link2, ClipboardPaste } from 'lucide-react';
 
 export default function UrlInput({ url, setUrl, onSubmit, isLoading, disabled }) {
   const handleSubmit = (e) => {
@@ -11,6 +11,19 @@ export default function UrlInput({ url, setUrl, onSubmit, isLoading, disabled })
 
   const handleClear = () => {
     setUrl('');
+  };
+
+  const handlePaste = async () => {
+    try {
+      if (navigator?.clipboard?.readText) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          setUrl(text.trim());
+        }
+      }
+    } catch {
+      // Ignore clipboard read permission errors
+    }
   };
 
   return (
@@ -28,9 +41,9 @@ export default function UrlInput({ url, setUrl, onSubmit, isLoading, disabled })
             placeholder="Paste YouTube URL"
             disabled={isLoading || disabled}
             autoFocus
-            className="w-full pl-10 pr-10 py-3 text-sm sm:text-base rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 dark:focus:ring-white/10 focus:border-neutral-400 dark:focus:border-neutral-600 transition shadow-sm"
+            className="w-full pl-10 pr-20 py-3 text-sm sm:text-base rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 dark:focus:ring-white/10 focus:border-neutral-400 dark:focus:border-neutral-600 transition shadow-sm"
           />
-          {url && !isLoading && (
+          {url && !isLoading ? (
             <button
               type="button"
               onClick={handleClear}
@@ -39,7 +52,20 @@ export default function UrlInput({ url, setUrl, onSubmit, isLoading, disabled })
             >
               <X className="w-4 h-4" />
             </button>
-          )}
+          ) : !url && !isLoading ? (
+            <button
+              type="button"
+              onClick={handlePaste}
+              className="absolute inset-y-0 right-0 pr-2.5 flex items-center"
+              aria-label="Paste from clipboard"
+              title="Paste from clipboard"
+            >
+              <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 transition font-medium">
+                <ClipboardPaste className="w-3.5 h-3.5 text-neutral-500" />
+                Paste
+              </span>
+            </button>
+          ) : null}
         </div>
 
         <button
