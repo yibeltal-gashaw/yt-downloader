@@ -35,22 +35,29 @@ setInterval(() => {
 app.use(cors());
 app.use(express.json());
 
-// YouTube URL validation
-const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/;
+// Supported URL validation (YouTube & TikTok)
+const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/i;
+const TIKTOK_REGEX = /^(https?:\/\/)?(www\.|vm\.|vt\.|m\.)?tiktok\.com\/.+/i;
 
-function isValidYouTubeUrl(url) {
+function isValidMediaUrl(url) {
   if (!url || typeof url !== 'string') return false;
   const trimmed = url.trim();
-  if (!YOUTUBE_REGEX.test(trimmed)) return false;
+  if (YOUTUBE_REGEX.test(trimmed) || TIKTOK_REGEX.test(trimmed)) return true;
 
   try {
     const parsed = new URL(trimmed.startsWith('http') ? trimmed : `https://${trimmed}`);
-    const host = parsed.hostname.toLowerCase();
-    return host === 'youtube.com' ||
-      host === 'www.youtube.com' ||
-      host === 'm.youtube.com' ||
-      host === 'music.youtube.com' ||
-      host === 'youtu.be';
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    const validHosts = [
+      'youtube.com',
+      'youtu.be',
+      'm.youtube.com',
+      'music.youtube.com',
+      'tiktok.com',
+      'vm.tiktok.com',
+      'vt.tiktok.com',
+      'm.tiktok.com',
+    ];
+    return validHosts.includes(host);
   } catch {
     return false;
   }
@@ -84,8 +91,8 @@ function safeUnlink(filePath) {
 app.post('/api/info', async (req, res) => {
   const { url } = req.body || {};
 
-  if (!isValidYouTubeUrl(url)) {
-    return res.status(400).json({ error: 'Please enter a valid YouTube URL.' });
+  if (!isValidMediaUrl(url)) {
+    return res.status(400).json({ error: 'Please enter a valid YouTube or TikTok URL.' });
   }
 
   try {
@@ -100,8 +107,8 @@ app.post('/api/info', async (req, res) => {
 app.post('/api/download/start', async (req, res) => {
   const { url, format, quality, title: passedTitle } = req.body || {};
 
-  if (!isValidYouTubeUrl(url)) {
-    return res.status(400).json({ error: 'Please enter a valid YouTube URL.' });
+  if (!isValidMediaUrl(url)) {
+    return res.status(400).json({ error: 'Please enter a valid YouTube or TikTok URL.' });
   }
 
   const normalizedFormat = (format || 'mp4').toLowerCase();
@@ -292,8 +299,8 @@ app.get('/api/download/file/:id', (req, res) => {
 app.post('/api/download', async (req, res) => {
   const { url, format, quality, title: passedTitle } = req.body || {};
 
-  if (!isValidYouTubeUrl(url)) {
-    return res.status(400).json({ error: 'Please enter a valid YouTube URL.' });
+  if (!isValidMediaUrl(url)) {
+    return res.status(400).json({ error: 'Please enter a valid YouTube or TikTok URL.' });
   }
 
   const normalizedFormat = (format || 'mp4').toLowerCase();

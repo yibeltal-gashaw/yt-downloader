@@ -103,7 +103,7 @@ export default function PhoneConnectModal({ isOpen, onClose }) {
           <div>
             <h2 className="text-lg font-bold tracking-tight">Connect via Phone</h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Access YouTube Downloader over your local Wi-Fi
+              Access YouTube &amp; TikTok Downloader over your local Wi-Fi
             </p>
           </div>
         </div>

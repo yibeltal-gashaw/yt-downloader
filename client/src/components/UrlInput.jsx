@@ -38,7 +38,7 @@ export default function UrlInput({ url, setUrl, onSubmit, isLoading, disabled })
             id="youtube-url-input"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Paste YouTube URL"
+            placeholder="Paste YouTube or TikTok URL"
             disabled={isLoading || disabled}
             autoFocus
             className="w-full pl-10 pr-20 py-3 text-sm sm:text-base rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 dark:focus:ring-white/10 focus:border-neutral-400 dark:focus:border-neutral-600 transition shadow-sm"

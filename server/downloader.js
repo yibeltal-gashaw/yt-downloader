@@ -87,9 +87,14 @@ async function getVideoInfo(url, maxDuration = 7200) {
   return new Promise((resolve, reject) => {
     execFile(ytDlp, args, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
-        const errorText = (stderr || error.message).toLowerCase();
+        const rawErr = (stderr || error.message || '').trim();
+        const errorText = rawErr.toLowerCase();
         if (errorText.includes('private') || errorText.includes('unavailable') || errorText.includes('not available')) {
-          return reject(new Error('This video is unavailable.'));
+          return reject(new Error('This video is unavailable or private.'));
+        }
+        const match = rawErr.match(/ERROR:\s*(?:\[[^\]]+\]\s*)?([^\r\n]+)/);
+        if (match && match[1]) {
+          return reject(new Error(match[1].trim()));
         }
         return reject(new Error('Could not retrieve video information. Please verify the URL.'));
       }
@@ -106,10 +111,15 @@ async function getVideoInfo(url, maxDuration = 7200) {
         const heightsSet = new Set();
         if (Array.isArray(data.formats)) {
           for (const f of data.formats) {
-            if (f.height && typeof f.height === 'number' && f.vcodec !== 'none') {
-              heightsSet.add(f.height);
+            if (f.height && typeof f.height === 'number') {
+              if (!f.vcodec || f.vcodec !== 'none') {
+                heightsSet.add(f.height);
+              }
             }
           }
+        }
+        if (data.height && typeof data.height === 'number') {
+          heightsSet.add(data.height);
         }
 
         const sortedHeights = Array.from(heightsSet).sort((a, b) => b - a);
@@ -125,7 +135,7 @@ async function getVideoInfo(url, maxDuration = 7200) {
         if (availableQualities.length === 0 && sortedHeights.length > 0) {
           availableQualities.push(`${sortedHeights[0]}p`);
         } else if (availableQualities.length === 0) {
-          availableQualities.push('720p', '360p');
+          availableQualities.push('Best Quality', '720p');
         }
 
         const formats = availableQualities.map((q) => ({
@@ -133,11 +143,17 @@ async function getVideoInfo(url, maxDuration = 7200) {
           format: 'mp4',
         }));
 
+        let rawTitle = data.title || data.fulltitle || data.description || 'Video';
+        if (typeof rawTitle === 'string' && rawTitle.includes('\n')) {
+          rawTitle = rawTitle.split('\n')[0];
+        }
+        rawTitle = String(rawTitle).slice(0, 120).trim() || 'Video';
+
         const result = {
-          title: data.title || data.fulltitle || 'YouTube Video',
+          title: rawTitle,
           thumbnail: data.thumbnail || (data.thumbnails && data.thumbnails[0]?.url) || '',
           duration: data.duration || 0,
-          channel: data.uploader || data.channel || '',
+          channel: data.uploader || data.channel || data.creator || data.uploader_id || '',
           formats,
         };
 

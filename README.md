@@ -1,13 +1,15 @@
-# YouTube Downloader
+# YouTube & TikTok Downloader
 
-A simple, fast, and minimal local YouTube downloader web application for personal use. Built with React, Vite, Tailwind CSS, Express, and yt-dlp + FFmpeg.
+A simple, fast, and minimal local YouTube and TikTok downloader web application for personal use. Built with React, Vite, Tailwind CSS, Express, and yt-dlp + FFmpeg.
 
 ## Features
 
+- **YouTube & TikTok Support**: Download videos and shorts from YouTube as well as watermark-free videos and audio from TikTok (including `vm.tiktok.com` mobile share links).
 - **Minimalist & Fast**: Single-page flow inspired by Linear/Raycast/Vercel utilities.
 - **Multiple Formats**: Download high-quality MP4 (video + audio) or convert directly to MP3 (audio only).
-- **Available Resolutions**: Automatically detects real resolutions (1080p, 720p, 480p, 360p).
+- **Available Resolutions**: Automatically detects real resolutions (1080p, 720p, 480p, 360p, or Best Available).
 - **Real-Time Progress**: Live percentage progress bar with speed, size, and ETA indicators.
+- **Phone / Mobile Access**: Connect via local Wi-Fi with an interactive QR code modal.
 - **Light & Dark Theme**: Built-in theme toggle with localStorage persistence.
 - **Auto Cleanup**: Media files are processed in a temporary directory and deleted immediately after transfer.
 - **Privacy & Safety**: Zero databases, zero telemetry, no accounts, and strictly runs locally.
@@ -114,7 +116,7 @@ ffmpeg -version
 ## Usage
 
 1. Open the application in your browser.
-2. Paste a YouTube URL (e.g. `https://www.youtube.com/watch?v=...` or `https://youtu.be/...`).
+2. Paste a YouTube or TikTok URL (e.g. YouTube watch/shorts or TikTok video/shortlink).
 3. Click **Get Video**.
 4. Select your desired format (**MP4** or **MP3**) and quality.
 5. Click **Download**.

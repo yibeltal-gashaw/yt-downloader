@@ -5,8 +5,32 @@ import VideoCard from './components/VideoCard';
 import DownloadOptions from './components/DownloadOptions';
 import PhoneConnectModal from './components/PhoneConnectModal';
 
-// Regex to validate common YouTube URLs
-const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/;
+// Regex to validate common YouTube and TikTok URLs
+const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.|m\.|music\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}/i;
+const TIKTOK_REGEX = /^(https?:\/\/)?(www\.|vm\.|vt\.|m\.)?tiktok\.com\/.+/i;
+
+function isValidUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (YOUTUBE_REGEX.test(trimmed) || TIKTOK_REGEX.test(trimmed)) return true;
+  try {
+    const parsed = new URL(trimmed.startsWith('http') ? trimmed : `https://${trimmed}`);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+    const validHosts = [
+      'youtube.com',
+      'youtu.be',
+      'm.youtube.com',
+      'music.youtube.com',
+      'tiktok.com',
+      'vm.tiktok.com',
+      'vt.tiktok.com',
+      'm.tiktok.com',
+    ];
+    return validHosts.includes(host);
+  } catch {
+    return false;
+  }
+}
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -64,12 +88,12 @@ export default function App() {
     const trimmedUrl = url.trim();
 
     if (!trimmedUrl) {
-      setErrorMessage('Please enter a YouTube URL.');
+      setErrorMessage('Please enter a YouTube or TikTok URL.');
       return;
     }
 
-    if (!YOUTUBE_REGEX.test(trimmedUrl)) {
-      setErrorMessage('Please enter a valid YouTube URL.');
+    if (!isValidUrl(trimmedUrl)) {
+      setErrorMessage('Please enter a valid YouTube or TikTok URL.');
       return;
     }
 
@@ -214,7 +238,7 @@ export default function App() {
             <Video className="w-4 h-4" />
           </div>
           <span className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm tracking-tight">
-            YouTube Downloader
+            YouTube &amp; TikTok Downloader
           </span>
         </div>
 
@@ -248,10 +272,10 @@ export default function App() {
       <main className="max-w-xl mx-auto w-full my-auto">
         <div className="text-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            YouTube Downloader
+            YouTube &amp; TikTok Downloader
           </h1>
           <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-            Download videos for personal use
+            Download high-quality video and audio for personal use
           </p>
         </div>
 
