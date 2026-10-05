@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Production build
+client/dist/
+
+# Temporary downloads
+server/downloads/*
+!server/downloads/.gitkeep
+
+# Binaries
+server/bin/
+*.exe
+
+# Environment variables
+.env
+*.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS artifacts
+.DS_Store
+Thumbs.db
